@@ -49,30 +49,34 @@ export default function ProblemEditorPage() {
     setErr(false);
 
     try {
-      const response = await fetch("https://router.huggingface.co/fireworks-ai/inference/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_HUGGING_FACE}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "accounts/fireworks/models/deepseek-v3",
-          stream: false,
-          messages: [
-            {
-              role: "user",
-              content: `With less words and more data format directly. Check if the solution matched the following question if yes then Analyze the following code for the question:\n\n${problem.title}\n${problem.problem_description}\n\nProvide a short and precise analysis in a tabular or key-value format including time complexity and test case evaluations:\n\n${sourceCode}`,
-            },
-          ],
-        }),
-      });
+      const response = await fetch(
+        "https://router.huggingface.co/fireworks-ai/inference/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_HUGGING_FACE}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "accounts/fireworks/models/deepseek-v3",
+            stream: false,
+            messages: [
+              {
+                role: "user",
+                content: `With less words and more data format directly. Check if the solution matched the following question if yes then Analyze the following code for the question:\n\n${problem.title}\n${problem.problem_description}\n\nProvide a short and precise analysis in a tabular or key-value format including time complexity and test case evaluations:\n\n${sourceCode}`,
+              },
+            ],
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
       }
 
       const data = await response.json();
-      const content = data.choices?.[0]?.message?.content ?? "No output received.";
+      const content =
+        data.choices?.[0]?.message?.content ?? "No output received.";
       setOutput(content);
       toast.success("Analysis Completed");
     } catch (err) {
@@ -85,21 +89,28 @@ export default function ProblemEditorPage() {
     }
   }
 
-
   if (!problem) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen dark:bg-slate-900 rounded-2xl shadow-2xl py-6 px-8">
       <div className="flex flex-col pb-3">
         <h2 className="text-white text-2xl font-semibold">{problem.title}</h2>
-        <div className="text-gray-400 text-sm mt-2 whitespace-pre-line">{problem.problem_description}</div>
+        <div className="text-gray-400 text-sm mt-2 whitespace-pre-line">
+          {problem.problem_description}
+        </div>
       </div>
 
       <div className="bg-slate-400 dark:bg-slate-950 p-3 rounded-2xl">
         <div className="flex justify-between pb-3">
-          <SelectLanguages onSelect={setLanguageOption} selectedLanguageOption={languageOption} />
+          <SelectLanguages
+            onSelect={setLanguageOption}
+            selectedLanguageOption={languageOption}
+          />
         </div>
-        <ResizablePanelGroup direction="horizontal" className="w-full rounded-lg border dark:bg-slate-900">
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="w-full rounded-lg border dark:bg-slate-900"
+        >
           <ResizablePanel defaultSize={50} minSize={35}>
             <Editor
               theme="vs-dark"
@@ -117,19 +128,29 @@ export default function ProblemEditorPage() {
               <div className="flex items-center justify-between bg-slate-400 dark:bg-slate-950 px-6 py-2">
                 <h2>Output</h2>
                 {loading ? (
-                  <Button disabled size={"sm"} className="dark:bg-purple-600 text-slate-100 bg-slate-800">
+                  <Button
+                    disabled
+                    size={"sm"}
+                    className="dark:bg-purple-600 text-slate-100 bg-slate-800"
+                  >
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
                     <span>Analyzing...</span>
                   </Button>
                 ) : (
-                  <Button onClick={analyzeCode} size={"sm"} className="dark:bg-purple-600 text-slate-100 bg-slate-800">
+                  <Button
+                    onClick={analyzeCode}
+                    size={"sm"}
+                    className="dark:bg-purple-600 text-slate-100 bg-slate-800"
+                  >
                     <Play className="w-4 h-4 mr-2" />
                     <span>Analyze</span>
                   </Button>
                 )}
               </div>
               <div className="px-6 space-y-2 overflow-y-auto max-h-[80vh]">
-                <pre className="text-sm text-white whitespace-pre-wrap">{output}</pre>
+                <pre className="text-sm text-white whitespace-pre-wrap">
+                  {output}
+                </pre>
               </div>
             </div>
           </ResizablePanel>
