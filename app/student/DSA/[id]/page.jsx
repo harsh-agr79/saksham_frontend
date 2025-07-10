@@ -61,7 +61,7 @@ export default function ProblemEditorPage() {
             messages: [
               {
                 role: "user",
-                content: `With less words and more data format directly. Check if the solution matched the following question if yes then Analyze the following code for the question:\n\n${problem.title}\n${problem.problem_description}\n\nProvide a short and precise analysis in a tabular or key-value format including time complexity and test case evaluations:\n\n${sourceCode}`,
+                content: `With less words and more data format directly. Check if the solution matched the following question if yes then Analyze the following code for the question:\n\n${problem.title}\n${problem.problem_description}\n\nProvide a short and precise analysis in only key-value format including time complexity and test case evaluations:\n\n${sourceCode}`,
               },
             ],
           }),
