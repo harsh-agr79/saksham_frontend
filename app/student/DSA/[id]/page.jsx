@@ -56,7 +56,7 @@ export default function ProblemEditorPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "accounts/fireworks/models/deepseek-r1",
+            model: "accounts/fireworks/models/deepseek-v3",
             stream: false,
             messages: [
               {
