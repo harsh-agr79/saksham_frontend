@@ -46,29 +46,45 @@ export default function ProblemEditorPage() {
   async function analyzeCode() {
     setLoading(true);
     setOutput("");
+    setErr(false);
 
-    const stream = client.chatCompletionStream({
-      model: "deepseek-ai/DeepSeek-R1",
-      messages: [
-        {
-          role: "user",
-          content: `With less words and more data format directly.Check if the solution matched the following question if yes then Analyze the following code for the question \n${problem.title} \n${problem.problem_description}. Provide a short and precise analysis in a tabular or key-value format including time complexity and test case evaluations: \n\n${sourceCode}`,
+    try {
+      const response = await fetch("https://router.huggingface.co/fireworks-ai/inference/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_HUGGING_FACE}`,
+          "Content-Type": "application/json",
         },
-      ],
-      provider: "together",
-      max_tokens: 500,
-    });
+        body: JSON.stringify({
+          model: "accounts/fireworks/models/deepseek-v3",
+          stream: false,
+          messages: [
+            {
+              role: "user",
+              content: `With less words and more data format directly. Check if the solution matched the following question if yes then Analyze the following code for the question:\n\n${problem.title}\n${problem.problem_description}\n\nProvide a short and precise analysis in a tabular or key-value format including time complexity and test case evaluations:\n\n${sourceCode}`,
+            },
+          ],
+        }),
+      });
 
-    for await (const chunk of stream) {
-      if (chunk.choices && chunk.choices.length > 0) {
-        const newContent = chunk.choices[0].delta.content;
-        setOutput((prevOutput) => prevOutput + newContent);
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
       }
-    }
 
-    setLoading(false);
-    toast.success("Analysis Completed");
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content ?? "No output received.";
+      setOutput(content);
+      toast.success("Analysis Completed");
+    } catch (err) {
+      console.error("Analysis failed", err);
+      setErr(true);
+      setOutput("Failed to analyze the code.");
+      toast.error("Failed to analyze the code.");
+    } finally {
+      setLoading(false);
+    }
   }
+
 
   if (!problem) return <div>Loading...</div>;
 
