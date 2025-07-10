@@ -9,13 +9,11 @@ import {
 } from "@/components/ui/resizable";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
-import { Loader, Play, TriangleAlert } from "lucide-react";
+import { Loader, Play } from "lucide-react";
 import { codeSnippets, languageOptions } from "@/config/config";
-import { HfInference } from "@huggingface/inference";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-
-const client = new HfInference(`${process.env.NEXT_PUBLIC_HUGGING_FACE}`);
+import ReactMarkdown from "react-markdown";
 
 export default function ProblemEditorPage() {
   const { id } = useParams();
@@ -147,10 +145,11 @@ export default function ProblemEditorPage() {
                   </Button>
                 )}
               </div>
+
               <div className="px-6 space-y-2 overflow-y-auto max-h-[80vh]">
-                <pre className="text-sm text-white whitespace-pre-wrap">
-                  {output}
-                </pre>
+                <div className="prose prose-invert dark:prose-invert text-white max-w-none text-sm">
+                  <ReactMarkdown>{output}</ReactMarkdown>
+                </div>
               </div>
             </div>
           </ResizablePanel>

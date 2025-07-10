@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { HfInference } from "@huggingface/inference";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X as CloseIcon } from "lucide-react";
-
-const client = new HfInference(`${process.env.NEXT_PUBLIC_HUGGING_FACE}`); // Replace with your Hugging Face token
+import ReactMarkdown from "react-markdown";
 
 export const ChatBot = () => {
   const [messages, setMessages] = useState([]);
@@ -125,10 +123,16 @@ export const ChatBot = () => {
                     : "bg-gray-700 text-left text-white"
                 }`}
               >
-                <p className="font-medium">
+                <p className="font-medium mb-1">
                   {message.sender === "user" ? "You" : "Bot"}:
                 </p>
-                <p>{message.text}</p>
+                {message.sender === "SamBot" ? (
+                  <div className="prose prose-invert dark:prose-invert max-w-none text-sm">
+                    <ReactMarkdown>{message.text}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <p>{message.text}</p>
+                )}
               </div>
             ))}
             {error && <p className="text-red-500">{error}</p>}
